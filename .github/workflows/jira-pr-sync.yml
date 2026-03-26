@@ -4,7 +4,12 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
     branches:
+      - main
       - 'release-*'
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   sync-jira:
