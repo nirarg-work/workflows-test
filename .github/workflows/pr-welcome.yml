@@ -1,0 +1,20 @@
+name: PR Welcome
+
+# Use pull_request_target to run with base repo permissions (allows commenting on fork PRs)
+# This is safe because the workflow doesn't checkout any code from the PR
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  welcome:
+    uses: nirarg/migration-planner-workflows/.github/workflows/pr-welcome.yml@main
+    with:
+      allowed-types: '["feat","fix","ci","build","chore","docs","refactor","test","style","perf"]'
+      jira-pattern: "ECOPROJECT-[0-9]+"
+      jira-required-types: '["feat","fix"]'
+      two-approval-types: '["feat","fix"]'
+      available-labels: '["ready-for-review","hold","work-in-progress"]'
