@@ -1,0 +1,18 @@
+name: PR Welcome
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  welcome:
+    uses: nirarg/migration-planner-workflows/.github/workflows/pr-welcome.yml@main
+    with:
+      allowed-types: '["feat","fix","ci","build","chore","docs","refactor","test","style","perf"]'
+      jira-pattern: "ECOPROJECT-[0-9]+"
+      jira-required-types: '["feat","fix"]'
+      two-approval-types: '["feat","fix"]'
+      available-labels: '["ready-for-review","hold","work-in-progress"]'
