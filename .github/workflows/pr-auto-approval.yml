@@ -1,0 +1,38 @@
+name: PR Auto-Approval
+
+# SECURITY NOTE: This workflow uses pull_request_target to run with elevated permissions
+# from the base repository's context, allowing it to auto-approve PRs from forks.
+# It's safe because it doesn't checkout any code from the PR.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  # Configuration job - define all shared values once
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      two-approval-types: ${{ steps.set-config.outputs.two-approval-types }}
+      bot-authors: ${{ steps.set-config.outputs.bot-authors }}
+    steps:
+      - id: set-config
+        run: |
+          echo 'two-approval-types=["feat","fix"]' >> $GITHUB_OUTPUT
+          echo 'bot-authors=["red-hat-konflux[bot]","dependabot[bot]"]' >> $GITHUB_OUTPUT
+
+  # Auto-approve PRs that only need 1 human approval
+  # GitHub branch protection requires 2 approvals globally
+  # This provides the 1st approval for eligible PRs (non-feat/fix or bot authored)
+  check-approvals:
+    needs: config
+    uses: nirarg/migration-planner-workflows/.github/workflows/pr-approval-check.yml@main
+    with:
+      two-approval-types: ${{ needs.config.outputs.two-approval-types }}
+      bot-authors: ${{ needs.config.outputs.bot-authors }}
+    secrets:
+      github-token: ${{ secrets.AUTO_APPROVE_TOKEN }}
