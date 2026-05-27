@@ -1,3 +1,3 @@
 # workflows-test
 
-test2
+example-1
